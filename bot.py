@@ -111,58 +111,20 @@ def process_command(user,room,cmd,formated_message=None,format_type=None,reply_t
       # help
       if re.search('^help$', command) is not None:
         answer="""%(bot_command)s help - this help
-  %(bot_command)s off - switch off bot voice to text translation in this room
-  %(bot_command)s on - switch on bot voice to text translation in this room
-  %(bot_command)s my off - switch off translations of my voice messages for all my rooms
-  %(bot_command)s my on - switch on translations of my voice messages for all my rooms
-  %(bot_command)s ping - check voice api status
-  %(bot_command)s status - show current settings
+  %(bot_command)s ping - check voice api status (TODO)
         """ % {"bot_command":conf.bot_command}
         return send_notice(room,answer)
 
-      # off
-      if re.search('^off$', command) is not None:
-        log.debug("try lock() before access global data()")
-        with lock:
-          log.debug("success lock() before access global data")
-          room_settings["enable"]=False
-          save_data(data)
-        log.debug("release lock() after access global data")
-        answer="""disable translate your voice to text for this room"""
-        return send_notice(room,answer)
-
-      # on
-      if re.search('^on$', command) is not None:
-        log.debug("try lock() before access global data()")
-        with lock:
-          log.debug("success lock() before access global data")
-          room_settings["enable"]=True
-          save_data(data)
-        log.debug("release lock() after access global data")
-        answer="""enable translate your voice messages to text for this room"""
-        return send_notice(room,answer)
-
-      # my on
-      if re.search('^my on$', command) is not None:
-        log.debug("try lock() before access global data()")
-        with lock:
-          log.debug("success lock() before access global data")
-          user_settings["enable"]=True
-          save_data(data)
-        log.debug("release lock() after access global data")
-        answer="""enable translate your voice to text for all your (%s) rooms"""%user
-        return send_notice(room,answer)
-
       # my off
-      if re.search('^my off$', command) is not None:
-        log.debug("try lock() before access global data()")
-        with lock:
-          log.debug("success lock() before access global data")
-          user_settings["enable"]=False
-          save_data(data)
-        log.debug("release lock() after access global data")
-        answer="""disable translate your voice to text for all your (%s) rooms"""%user
-        return send_notice(room,answer)
+#      if re.search('^my off$', command) is not None:
+#        log.debug("try lock() before access global data()")
+#        with lock:
+#          log.debug("success lock() before access global data")
+#          user_settings["enable"]=False
+#          save_data(data)
+#        log.debug("release lock() after access global data")
+#        answer="""disable translate your voice to text for all your (%s) rooms"""%user
+#        return send_notice(room,answer)
 
     # если определили сообщение как ссылку
     if re.search("^http",cmd)!=None:
