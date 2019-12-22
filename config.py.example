@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+server="https://matrix.org"
+username="video2voice"
+password="XXXXXXXXXXX"
+# matrix device id for client - set any string like 'k4nctrsE'
+device_id = "3445345" 
+
+# если списки пусты, то бот будет принимать приглашения от всех:
+# если казаны и домены и пользователи, то если совпало хоть одно - то бот примет приглашение, если ни одно из указанных не совпало - то не примет.
+# разрешить приглашать бота в комнаты только MATRIX-пользователям с указанных MATRIX-доменов (хоумсервера) - указать через запятую можно:
+# if list empty - allow invite from all users. 
+# if list not empty - allow invite if any equal
+allow_domains=["matrix.org"]
+# разрешить приглашать бота в комнаты только указанному пользователю MATRIX:
+# allow invite from selected users:
+allow_users=[]
+
+bot_command="!vv"
+
+var_path="."
+
+log_path="video2voice.log"
+
+debug=True
+
+store_tmp_path="/tmp/"

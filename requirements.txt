@@ -1,0 +1,5 @@
+MatrixClient
+pickle
+json
+threading
+youtube-dl
