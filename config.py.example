@@ -19,6 +19,8 @@ allow_users=[]
 
 bot_command="!vv"
 
+var_path="."
+
 log_path="video2voice.log"
 # how match keep backup log files:
 log_backup_count=30
