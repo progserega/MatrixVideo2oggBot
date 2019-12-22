@@ -189,7 +189,11 @@ def process_command(user,room,cmd,formated_message=None,format_type=None,reply_t
         message="error send voice to room"
         log.error(message)
         send_notice(room,message)
+        log.info("delete tmp file %s"%filepath)
+        os.remove(filepath)
         return False
+      log.debug("delete tmp file %s"%filepath)
+      os.remove(filepath)
       return True
       #=======================================
 
