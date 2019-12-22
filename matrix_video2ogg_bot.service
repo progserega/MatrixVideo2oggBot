@@ -1,0 +1,31 @@
+[Unit]
+Description=Video url to ogg matrix bot
+After=syslog.target network.target nss-lookup.target
+
+[Service]
+Type=simple
+ExecStartPre=/bin/true
+ExecStart=/opt/MatrixVideo2oggBot/bot.py
+ExecReload=/bin/true
+KillSignal=SIGTERM
+TimeoutSec=30
+Restart=always
+RestartSec=60
+LimitNOFILE=32768
+
+User=mautrix_bridge
+
+# Hardening
+DeviceAllow=/dev/null rw
+DeviceAllow=/dev/urandom r
+ProtectHome=yes
+ProtectSystem=full
+ReadOnlyDirectories=/run
+ReadOnlyDirectories=/opt/MatrixVideo2oggBot
+ReadWriteDirectories=/opt/MatrixVideo2oggBot/log
+ReadWriteDirectories=/opt/MatrixVideo2oggBot/tmp
+#CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_NET_BIND_SERVICE
+PermissionsStartOnly=yes
+
+[Install]
+WantedBy = multi-user.target
