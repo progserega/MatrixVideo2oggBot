@@ -163,20 +163,28 @@ def process_command(user,room,cmd,formated_message=None,format_type=None,reply_t
         answer="""disable translate your voice to text for all your (%s) rooms"""%user
         return send_notice(room,answer)
 
-    # если бот включён в этой комнате:
+    # если определили сообщение как ссылку
     if re.search("^http",cmd)!=None:
+      result_string="try download and convert %s..."%cmd
+      log.info(result_string)
+      if send_notice(room,result_string)==False:
+        log.error("send_notice(%s)"%room)
+        return False
+
       # пришла url-ссылка пробуем её обработать (скачать и сконвертировать в звук)
-      filename=youtube_dl_api.video2ogg(log,cmd)
-      if filename==None:
+      filepath=youtube_dl_api.video2ogg(log,cmd)
+      if filepath==None:
         result_string="error convert url '%s' to ogg"%cmd
         log.error(result_string)
         if send_notice(room,result_string)==False:
           log.error("send_notice(%s)"%room)
         return False
 
+      filename=os.path.basename(filepath)
+
       # ========= begin translate ===========
       log.info("send converted file to user")
-      oggdata=open(conf.store_tmp_path+'/'+filename,"rb").read()
+      oggdata=open(filepath,"rb").read()
       if send_audio_to_matrix(room,filename,oggdata) == False:
         message="error send voice to room"
         log.error(message)
@@ -514,7 +522,7 @@ def on_invite(room, event):
           room_class = client.join_room(room)
           log.debug("success join to room: %s"%room)
           room_class.send_text("Спасибо за приглашение! Недеюсь быть Вам полезным. :-)")
-          room_class.send_text("Для справки по доступным командам - неберите: '!vs help'")
+          room_class.send_text("Для справки по доступным командам - неберите: '%s help'"%conf.bot_command)
           log.debug("success send 'hello' to room: %s"%room)
           log.info("User '%s' invite me to room: %s and I success join to room"%(user,room))
           # Прописываем системную группу для пользователя 
@@ -596,22 +604,26 @@ def main():
 
 def send_audio_to_matrix(room,file_name,audio_data):
   global log
-  log.debug("=start function=")
-  size=0
-  # TODO добавить определение типа:
-  mimetype="audio/ogg"
-  
-  mxc_url=upload_file(audio_data,mimetype)
-  if mxc_url == None:
-    log.error("uload file to matrix server")
-    return False
-  log.debug("send file 1")
+  try:
+    log.debug("=start function=")
+    size=0
+    # TODO добавить определение типа:
+    mimetype="audio/ogg"
+    
+    mxc_url=upload_file(audio_data,mimetype)
+    if mxc_url == None:
+      log.error("uload file to matrix server")
+      return False
+    log.debug("send file 1")
 
-  if sender_name!=None:
-    file_name=sender_name+' прислал песню: '+file_name
+    duration=0
 
-  if matrix_send_audio(room,mxc_url,file_name,mimetype,size,duration) == False:
-    log.error("send file to room")
+    if matrix_send_audio(room,mxc_url,file_name,mimetype,size,duration) == False:
+      log.error("send file to room")
+      return False
+  except Exception as e:
+    log.error(get_exception_traceback_descr(e))
+    log.error("unknown youtube_dl error: %s"%str(e))
     return False
   return True
 
@@ -622,32 +634,38 @@ def matrix_send_audio(room_id,url,name,mimetype="audio/mpeg",size=0,duration=0):
   ret=None
   room=None
   try:
-    room = client.join_room(room_id)
-  except MatrixRequestError as e:
-    print(e)
-    if e.code == 400:
-      log.error("Room ID/Alias in the wrong format")
-      return False
-    else:
-      log.error("Couldn't find room.")
-      return False
-  audioinfo={}
-  audioinfo["mimetype"]=mimetype
-  audioinfo["size"]=size
-  audioinfo["duration"]=duration
-  try:
-    log.debug("send file 2")
-    #ret=room.send_image(url,name,imageinfo)
-    ret=room.send_audio(url,name,audioinfo=audioinfo)
-    log.debug("send file 3")
-  except MatrixRequestError as e:
-    print(e)
-    if e.code == 400:
-      log.error("ERROR send audio with mxurl=%s"%url)
-      return False
-    else:
-      log.error("Couldn't send audio (unknown error) with mxurl=%s"%url)
-      return False
+    try:
+      room = client.join_room(room_id)
+    except MatrixRequestError as e:
+      print(e)
+      if e.code == 400:
+        log.error("Room ID/Alias in the wrong format")
+        return False
+      else:
+        log.error("Couldn't find room.")
+        return False
+    audioinfo={}
+    audioinfo["mimetype"]=mimetype
+    audioinfo["size"]=size
+    audioinfo["duration"]=duration
+    try:
+      log.debug("send file 2")
+      #ret=room.send_image(url,name,imageinfo)
+      ret=room.send_audio(url,name,audioinfo=audioinfo)
+      log.debug("send file 3")
+    except MatrixRequestError as e:
+      print(e)
+      if e.code == 400:
+        log.error("ERROR send audio with mxurl=%s"%url)
+        return False
+      else:
+        log.error("Couldn't send audio (unknown error) with mxurl=%s"%url)
+        return False
+  except Exception as e:
+    log.error(get_exception_traceback_descr(e))
+    log.error("unknown youtube_dl error: %s"%str(e))
+    return False
+
   return True
 
 def upload_file(content,content_type,filename=None):
