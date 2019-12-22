@@ -22,6 +22,7 @@ ProtectHome=yes
 ProtectSystem=full
 ReadOnlyDirectories=/run
 ReadOnlyDirectories=/opt/MatrixVideo2oggBot
+ReadWriteDirectories=/opt/MatrixVideo2oggBot/var
 ReadWriteDirectories=/opt/MatrixVideo2oggBot/log
 ReadWriteDirectories=/opt/MatrixVideo2oggBot/tmp
 #CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_NET_BIND_SERVICE
