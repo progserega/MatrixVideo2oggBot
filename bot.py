@@ -142,10 +142,37 @@ def process_command(user,room,cmd,formated_message=None,format_type=None,reply_t
         if send_notice(room,result_string)==False:
           log.error("send_notice(%s)"%room)
         return False
+      result_string="success download and convert"%cmd
+      log.info(result_string)
+      if send_notice(room,result_string)==False:
+        log.error("send_notice(%s)"%room)
+        return False
 
       filename=os.path.basename(filepath)
 
-      # ========= begin translate ===========
+      # ========= begin send file ===========
+      filesize=os.path.getsize(filepath)
+      size=filesize
+      size_postfix="bytes"
+      filesize=filesize/1024
+      if filesize > 1:
+        size=filename
+        size_postfix="kb"
+      filesize=filesize/1024
+      if filesize > 1:
+        size=filename
+        size_postfix="Mb"
+      filesize=filesize/1024
+      if filesize > 1:
+        size=filename
+        size_postfix="Gb"
+        
+      result_string="begin send audio file to matrix (size=%.2f %s)"%(size,size_postfix)
+      log.info(result_string)
+      if send_notice(room,result_string)==False:
+        log.error("send_notice(%s)"%room)
+        return False
+
       log.info("send converted file to user")
       oggdata=open(filepath,"rb").read()
       if send_audio_to_matrix(room,filename,oggdata) == False:
