@@ -142,7 +142,8 @@ def process_command(user,room,cmd,formated_message=None,format_type=None,reply_t
         if send_notice(room,result_string)==False:
           log.error("send_notice(%s)"%room)
         return False
-      result_string="success download and convert"%cmd
+
+      result_string="success download and convert"
       log.info(result_string)
       if send_notice(room,result_string)==False:
         log.error("send_notice(%s)"%room)
