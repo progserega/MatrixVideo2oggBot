@@ -157,18 +157,18 @@ def process_command(user,room,cmd,formated_message=None,format_type=None,reply_t
       size_postfix="bytes"
       filesize=filesize/1024
       if filesize > 1:
-        size=filename
+        size=filesize
         size_postfix="kb"
       filesize=filesize/1024
       if filesize > 1:
-        size=filename
+        size=filesize
         size_postfix="Mb"
       filesize=filesize/1024
       if filesize > 1:
-        size=filename
+        size=filesize
         size_postfix="Gb"
         
-      result_string="begin send audio file to matrix (size=%.2f %s)"%(size,size_postfix)
+      result_string="begin send audio file to matrix (size=%.2f %s)"%(float(size),size_postfix)
       log.info(result_string)
       if send_notice(room,result_string)==False:
         log.error("send_notice(%s)"%room)
