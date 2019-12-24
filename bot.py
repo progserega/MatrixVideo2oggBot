@@ -152,7 +152,7 @@ def process_command(user,room,cmd,formated_message=None,format_type=None,reply_t
       filename=os.path.basename(filepath)
 
       # ========= begin send file ===========
-      filesize=os.path.getsize(filepath)
+      filesize=float(os.path.getsize(filepath))
       size=filesize
       size_postfix="bytes"
       filesize=filesize/1024
